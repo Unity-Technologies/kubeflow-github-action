@@ -23,7 +23,7 @@ inputs:
     description: The namespace in which the pipeline should run
     required: true
   PIPELINE_ID: 
-    description: The ID of the version of the pipeline to be triggered. If not provided, the default version will run.
+    description: The ID of the version of the pipeline to be triggered
     required: true
   RUN_NAME:
     description: Name of the run (will be suffixed with datetime).
