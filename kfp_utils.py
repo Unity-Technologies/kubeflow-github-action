@@ -208,13 +208,22 @@ def run_pipeline(client: kfp.Client,
     pipeline_params = {} if not pipeline_parameters_path else read_pipeline_params(pipeline_parameters_path)
     version_id = None if not pipeline_version_name else find_pipeline_version_id(pipeline_id, pipeline_version_name, client)
 
+    if pipeline_id:
+        resolved_pipeline_id = pipeline_id
+    else:
+        base_pipeline_id = find_pipeline_id(pipeline_name, client)
+        if pipeline_version_name:
+            resolved_pipeline_id = find_pipeline_version_id(base_pipeline_id, pipeline_version_name, client)
+        else:
+            resolved_pipeline_id = base_pipeline_id
+
     logging.info(
         f"experiment_id: {experiment_id}, job_name:{job_name}, pipeline_params:{pipeline_params}, pipeline_id:{pipeline_id}, namespace:{namespace}")
     client.run_pipeline(
         experiment_id=experiment_id,
         job_name=job_name,
         params=pipeline_params,
-        pipeline_id=pipeline_id,
+        pipeline_id=resolved_pipeline_id,
         version_id=version_id,
         service_account=service_account)
     logging.info(
