@@ -24,9 +24,9 @@ on: [push]
 * PIPELINE_VERSION_NAME: The name of the pipeline version. Defaults to `{PIPELINE_FUNCTION}_{GITHUB_SHA}`.
 * PIPELINE_PARAMETERS_PATH: Optional. Path to a parameters YAML file in your repo; the parameters will be passed to the pipeline.
 * ENCODED_GOOGLE_APPLICATION_CREDENTIALS: JSON key for a service account with permissions to call the KFP API. Base 64 encoded, e.g.:
-* ``` bash
-* cat path-to-key.json | base64
-* ```
+``` bash
+cat path-to-key.json | base64
+```
 * EXPERIMENT_NAME: The name of the experiment name within which the kubeflow pipeline should run
 * PIPELINE_NAMESPACE: The namespace in which the pipeline should run
 * RUN_PIPELINE: Should github action also trigger the pipeline: "true" or "false" (default false).

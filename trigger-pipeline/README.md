@@ -17,9 +17,9 @@ on: [push]
 * CLIENT_ID: The IAP client id, which was specified when the kubeflow deployment where setup using IAP.
 * PIPELINE_PARAMETERS_PATH: Optional. Path to a parameters YAML file in your repo; the parameters will be passed to the pipeline.
 * ENCODED_GOOGLE_APPLICATION_CREDENTIALS: JSON key for a service account with permissions to call the KFP API. Base 64 encoded, e.g.:
-* ``` bash
-* cat path-to-key.json | base64
-* ```
+``` bash
+cat path-to-key.json | base64
+```
 * EXPERIMENT_NAME: The name of the experiment name within which the kubeflow pipeline should run
 * PIPELINE_NAMESPACE: The namespace in which the pipeline should run
 * PIPELINE_ID: The ID of the version of the pipeline to be triggered. If provided this will take priority over the pipeline name and version name.
