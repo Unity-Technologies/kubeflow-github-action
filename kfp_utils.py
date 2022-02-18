@@ -213,8 +213,10 @@ def run_pipeline(client: kfp.Client,
         resolved_pipeline_id = pipeline_id
     else:
         base_pipeline_id = find_pipeline_id(pipeline_name, client)
+        logging.info(f"Found ID for pipeline {pipeline_name}: {base_pipeline_id}")
         if pipeline_version_name:
             resolved_pipeline_id = find_pipeline_version_id(base_pipeline_id, pipeline_version_name, client)
+            logging.info(f"Found ID for pipeline version {pipeline_version_name}: {resolved_pipeline_id}")
         else:
             resolved_pipeline_id = base_pipeline_id
 
