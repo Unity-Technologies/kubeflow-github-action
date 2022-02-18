@@ -39,6 +39,7 @@ def pipeline_compile(pipeline_function: object, v2_compatible: bool = False) -> 
 
     Arguments:
         pipeline_func {object} -- The kubeflow pipeline function
+        v2_compatible {bool} --  Whether to compile in V2_COMPATIBLE mode
 
     Returns:
         str -- The name of the compiled kubeflow pipeline
@@ -62,7 +63,11 @@ def upload_pipeline(pipeline_name_zip: str,
 
     Arguments:
         pipeline_name_zip {str} -- The name of the compiled pipeline
-        pipeline_name {str} -- The name of the pipeline function. This will be the name in the kubeflow UI. 
+        pipeline_name {str} -- The name of the pipeline. This will be the name in the kubeflow UI.
+        kubeflow_url {str} -- URL of the Kubeflow server
+        client_id {str} -- IAP Client ID for auth
+        pipeline_version_name {str} -- The name of the pipeline version. This will be the name of
+            this version in the kubeflow UI.
     """
     client = kfp.Client(
         host=kubeflow_url,
@@ -125,13 +130,13 @@ def find_pipeline_version_id(pipeline_id: str,
         pipeline_id {str} -- The ID of the pipeline of interest
         version_name -- The name of the version of interest
         client {kfp.Client} -- The kfp client
-        page_size {str} -- The number of pipelines to collect a each API request
+        page_size {str} -- The number of pipeline versions to collect a each API request
 
     Keyword Arguments:
         page_token {str} -- The page token to use for the API request (default: {" "})
 
     Returns:
-        [type] -- The pipeline id. If None no match
+        [type] -- The pipeline version id. If None no match
     """
     while True:
         logging.info(f"Retrieving versions for pipeline ID {pipeline_id}")
@@ -158,7 +163,12 @@ def find_experiment_id(experiment_name: str,
 
     Arguments:
         experiment_name {str} -- The experiment name
+        namespace {str} -- The namespace to search for the experiment
         client {kfp.Client} -- The kfp client
+        page_size {str} -- The number of experiments to collect a each API request
+
+    Keyword Arguments:
+        page_token {str} -- The page token to use for the API request (default: {" "})
 
     Returns:
         str -- The experiment id
@@ -179,7 +189,13 @@ def find_experiment_id(experiment_name: str,
 
 
 def read_pipeline_params(pipeline_parameters_path: str) -> dict:
-    # [TODO] add docstring here
+    """Function to read pipeline parameters from YAML
+
+    Arguments:
+        pipeline_parameters_path {str} -- Path to YAML file containing set parameters
+    Returns:
+        dict -- Dictionary containing the parameters
+    """
     pipeline_params = {}
     with open(pipeline_parameters_path) as f:
         try:
@@ -202,6 +218,19 @@ def run_pipeline(client: kfp.Client,
                  service_account: str,
                  pipeline_version_name: str = None,
                  run_name: str = None):
+    """Function to trigger a run of an existing pipeline
+
+    Arguments:
+        client {kfp.Client} -- The kfp client
+        pipeline_name {str} -- The name of the pipeline to trigger
+        pipeline_id {str} -- The ID of the pipeline to trigger, takes precedence over name if provided
+        experiment_name {str} -- The name of the experiment to place the run in
+        pipeline_parameters_path {str} -- Optional path to parameters YAML file
+        namespace {str} -- The Kubeflow namespace of the pipeline
+        service_account {str} -- Optional, name of the Kubernetes service account to run the pipeline with
+        pipeline_version_name {str} -- Name of the pipeline version, if pipeline_name was provided
+        run_name {str} -- Name of the pipeline run
+    """
     experiment_id = find_experiment_id(
         experiment_name=experiment_name, client=client, namespace=namespace)
     logging.info(f"The expriment id is: {experiment_id}")
@@ -222,7 +251,7 @@ def run_pipeline(client: kfp.Client,
             resolved_version_id = None
 
     logging.info(
-        f"experiment_id: {experiment_id}, job_name:{job_name}, pipeline_params:{pipeline_params}, pipeline_id:{pipeline_id}, namespace:{namespace}")
+        f"experiment_id: {experiment_id}, job_name:{job_name}, pipeline_params:{pipeline_params}, pipeline_id:{pipeline_id}, version_id:{resolved_version_id}, namespace:{namespace}")
     client.run_pipeline(
         experiment_id=experiment_id,
         job_name=job_name,
