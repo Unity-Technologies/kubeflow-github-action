@@ -100,6 +100,7 @@ def find_pipeline_id(pipeline_name: str,
     while True:
         pipelines = client.list_pipelines(
             page_size=page_size, page_token=page_token)
+        logging.info(f"Searching for pipeline name {pipeline_name}")
         for pipeline in pipelines.pipelines:
             logging.info(f"Found pipeline name {pipeline.name}")
             if pipeline.name == pipeline_name:
