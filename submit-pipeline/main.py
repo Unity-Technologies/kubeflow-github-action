@@ -23,7 +23,8 @@ def main():
     client = upload_pipeline(pipeline_name_zip=pipeline_name_zip,
                              pipeline_name=pipeline_name,
                              kubeflow_url=os.getenv('INPUT_KUBEFLOW_URL'),
-                             client_id=os.getenv("INPUT_CLIENT_ID"))
+                             client_id=os.getenv("INPUT_CLIENT_ID"),
+                             pipeline_version_name=os.getenv("INPUT_PIPELINE_VERSION_NAME"))
     logging.info(os.getenv("INPUT_RUN_PIPELINE"))
     logging.info(os.getenv("INPUT_EXPERIMENT_NAME"))
     if os.getenv("INPUT_RUN_PIPELINE") and os.getenv("INPUT_RUN_PIPELINE").lower() == "true":
