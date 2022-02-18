@@ -25,20 +25,14 @@ inputs:
   ENCODED_GOOGLE_APPLICATION_CREDENTIALS:
     description: The base64 encoded google credentials
     required: true
-  GOOGLE_APPLICATION_CREDENTIALS:
-    description: The path to the decoded google credentials
-    required: true
   EXPERIMENT_NAME: 
-    description: The name of the experiment name within which the kubeflow experiment should run
+    description: The name of the experiment name within which the kubeflow pipeline should run
     required: true
   PIPELINE_NAMESPACE: 
     description: The namespace in which the pipeline should run
     required: true
   RUN_PIPELINE: 
     description: Should github action also trigger the pipeline
-    required: false
-  VERSION_GITHUB_SHA: 
-    description: If the pipeline containers are versioned with the github hash
     required: false
   V2_COMPATIBLE:
     description: If the pipeline should be compiled with KFP SDK v2 compatibility

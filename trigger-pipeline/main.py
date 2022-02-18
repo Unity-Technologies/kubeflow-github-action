@@ -7,7 +7,7 @@ from kfp_utils import *
 def main():
     logging.info(
         "Started the process to compile and upload the pipeline to kubeflow.")
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.environ["INPUT_GOOGLE_APPLICATION_CREDENTIALS"]
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/tmp/gcloud-sa.json"
     logging.info(os.getenv("INPUT_RUN_PIPELINE"))
     logging.info(os.getenv("INPUT_EXPERIMENT_NAME"))
 

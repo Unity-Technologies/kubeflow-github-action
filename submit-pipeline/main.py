@@ -7,7 +7,7 @@ from kfp_utils import *
 def main():
     logging.info(
         "Started the process to compile and upload the pipeline to kubeflow.")
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.environ["INPUT_GOOGLE_APPLICATION_CREDENTIALS"]
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/tmp/gcloud-sa.json"
     pipeline_function = load_function(pipeline_function_name=os.getenv('INPUT_PIPELINE_FUNCTION'),
                                       full_path_to_pipeline=os.getenv('INPUT_PIPELINE_CODE_PATH'))
     logging.info("The value of the VERSION_GITHUB_SHA is: {}".format(
