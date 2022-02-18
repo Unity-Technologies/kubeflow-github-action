@@ -132,6 +132,7 @@ def find_pipeline_version_id(pipeline_id: str,
         [type] -- The pipeline id. If None no match
     """
     while True:
+        logging.info(f"Retrieving versions for pipeline ID {pipeline_id}")
         versions = client.list_pipeline_versions(
             pipeline_id=pipeline_id, page_size=page_size, page_token=page_token)
         for version in versions.versions:
