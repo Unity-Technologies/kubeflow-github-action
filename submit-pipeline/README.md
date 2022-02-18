@@ -30,6 +30,7 @@ cat path-to-key.json | base64
 * EXPERIMENT_NAME: The name of the experiment name within which the kubeflow pipeline should run
 * PIPELINE_NAMESPACE: The namespace in which the pipeline should run
 * RUN_PIPELINE: Should github action also trigger the pipeline: "true" or "false" (default false).
+  RUN_NAME: Name of the pipeline run. Defaults to `{PIPELINE_NAME}_{DATETIME}`.
 * V2_COMPATIBLE:
 * description: If the pipeline should be compiled with KFP SDK v2 compatibility. "true" or "false" (default false).
 * PIPELINE_SERVICE_ACCOUNT: Specifies which Kubernetes service account this run uses.

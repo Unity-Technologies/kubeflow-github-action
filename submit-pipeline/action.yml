@@ -34,6 +34,9 @@ inputs:
   RUN_PIPELINE: 
     description: Should github action also trigger the pipeline
     required: false
+  RUN_NAME:
+    description: Name of the pipeline run. Defaults to {PIPELINE_NAME}_{DATETIME}.
+    required: false
   V2_COMPATIBLE:
     description: If the pipeline should be compiled with KFP SDK v2 compatibility
     required: false
