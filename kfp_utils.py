@@ -209,18 +209,17 @@ def run_pipeline(client: kfp.Client,
     logging.info(f"The job name is: {job_name}")
 
     pipeline_params = {} if not pipeline_parameters_path else read_pipeline_params(pipeline_parameters_path)
-    version_id = None if not pipeline_version_name else find_pipeline_version_id(pipeline_id, pipeline_version_name, client)
 
     if pipeline_id:
         resolved_pipeline_id = pipeline_id
     else:
-        base_pipeline_id = find_pipeline_id(pipeline_name, client)
-        logging.info(f"Found ID for pipeline {pipeline_name}: {base_pipeline_id}")
+        resolved_pipeline_id = find_pipeline_id(pipeline_name, client)
+        logging.info(f"Found ID for pipeline {pipeline_name}: {resolved_pipeline_id}")
         if pipeline_version_name:
-            resolved_pipeline_id = find_pipeline_version_id(base_pipeline_id, pipeline_version_name, client)
-            logging.info(f"Found ID for pipeline version {pipeline_version_name}: {resolved_pipeline_id}")
+            resolved_version_id = find_pipeline_version_id(resolved_pipeline_id, pipeline_version_name, client)
+            logging.info(f"Found ID for pipeline version {pipeline_version_name}: {resolved_version_id}")
         else:
-            resolved_pipeline_id = base_pipeline_id
+            resolved_version_id = None
 
     logging.info(
         f"experiment_id: {experiment_id}, job_name:{job_name}, pipeline_params:{pipeline_params}, pipeline_id:{pipeline_id}, namespace:{namespace}")
@@ -229,7 +228,7 @@ def run_pipeline(client: kfp.Client,
         job_name=job_name,
         params=pipeline_params,
         pipeline_id=resolved_pipeline_id,
-        version_id=version_id,
+        version_id=resolved_version_id,
         service_account=service_account)
     logging.info(
         "Successfully started the pipeline, head over to kubeflow and check it out")
