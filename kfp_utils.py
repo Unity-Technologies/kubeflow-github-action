@@ -39,6 +39,7 @@ def pipeline_compile(pipeline_function: object, v2_compatible: bool = False) -> 
 
     Arguments:
         pipeline_func {object} -- The kubeflow pipeline function
+        v2_compatible {bool} --  Whether to compile in V2_COMPATIBLE mode
 
     Returns:
         str -- The name of the compiled kubeflow pipeline
@@ -53,24 +54,41 @@ def pipeline_compile(pipeline_function: object, v2_compatible: bool = False) -> 
     return pipeline_name_zip
 
 
-def upload_pipeline(pipeline_name_zip: str, pipeline_name: str, kubeflow_url: str, client_id: str):
+def upload_pipeline(pipeline_name_zip: str,
+                    pipeline_name: str,
+                    kubeflow_url: str,
+                    client_id: str,
+                    pipeline_version_name: str = None):
     """Function to upload pipeline to kubeflow. 
 
     Arguments:
         pipeline_name_zip {str} -- The name of the compiled pipeline
-        pipeline_name {str} -- The name of the pipeline function. This will be the name in the kubeflow UI. 
+        pipeline_name {str} -- The name of the pipeline. This will be the name in the kubeflow UI.
+        kubeflow_url {str} -- URL of the Kubeflow server
+        client_id {str} -- IAP Client ID for auth
+        pipeline_version_name {str} -- The name of the pipeline version. This will be the name of
+            this version in the kubeflow UI.
     """
     client = kfp.Client(
         host=kubeflow_url,
         client_id=client_id,
     )
-    client.upload_pipeline(
-        pipeline_package_path=pipeline_name_zip,
-        pipeline_name=pipeline_name)
+    if pipeline_version_name:
+        client.upload_pipeline_version(
+            pipeline_package_path=pipeline_name_zip,
+            pipeline_version_name=pipeline_version_name,
+            pipeline_name=pipeline_name)
+    else:
+        client.upload_pipeline(
+            pipeline_package_path=pipeline_name_zip,
+            pipeline_name=pipeline_name)
     return client
 
 
-def find_pipeline_id(pipeline_name: str, client: kfp.Client, page_size: str = 100, page_token: str = "") -> str:
+def find_pipeline_id(pipeline_name: str,
+                     client: kfp.Client,
+                     page_size: str = 100,
+                     page_token: str = "") -> str:
     """Function to find the pipeline id of a pipeline. 
 
     Arguments:
@@ -87,25 +105,70 @@ def find_pipeline_id(pipeline_name: str, client: kfp.Client, page_size: str = 10
     while True:
         pipelines = client.list_pipelines(
             page_size=page_size, page_token=page_token)
+        logging.info(f"Searching for pipeline name {pipeline_name}")
         for pipeline in pipelines.pipelines:
+            logging.info(f"Found pipeline name {pipeline.name}")
             if pipeline.name == pipeline_name:
                 logging.info(f"The pipeline id is: {pipeline.id}")
                 return pipeline.id
         # Start need to know where to do next itteration from
         page_token = pipelines.next_page_token
-        # If no next tooken break
+        # If no next token break
         if not page_token:
-            logging.info(
-                f"Could not find the pipeline, is the name: {pipeline_name} correct?")
-            break
+            raise ValueError("Failed to find pipeline with the name: {}".format(
+                pipeline_name))
 
 
-def find_experiment_id(experiment_name: str, namespace: str, client: kfp.Client, page_size: int = 100, page_token: str = "") -> str:
+def find_pipeline_version_id(pipeline_id: str,
+                             version_name: str,
+                             client: kfp.Client,
+                             page_size: str = 100,
+                             page_token: str = "") -> str:
+    """Function to find the pipeline id of a pipeline.
+
+    Arguments:
+        pipeline_id {str} -- The ID of the pipeline of interest
+        version_name -- The name of the version of interest
+        client {kfp.Client} -- The kfp client
+        page_size {str} -- The number of pipeline versions to collect a each API request
+
+    Keyword Arguments:
+        page_token {str} -- The page token to use for the API request (default: {" "})
+
+    Returns:
+        [type] -- The pipeline version id. If None no match
+    """
+    while True:
+        logging.info(f"Retrieving versions for pipeline ID {pipeline_id}")
+        versions = client.list_pipeline_versions(
+            pipeline_id=pipeline_id, page_size=page_size, page_token=page_token)
+        for version in versions.versions:
+            if version.name == version_name:
+                logging.info(f"The pipeline version id is: {version.id}")
+                return version.id
+        # Start need to know where to do next itteration from
+        page_token = versions.next_page_token
+        # If no next token break
+        if not page_token:
+            raise ValueError("Failed to find pipeline version with the name: {}".format(
+                version_name))
+
+
+def find_experiment_id(experiment_name: str,
+                       namespace: str,
+                       client: kfp.Client,
+                       page_size: int = 100,
+                       page_token: str = "") -> str:
     """Function to return the experiment id
 
     Arguments:
         experiment_name {str} -- The experiment name
+        namespace {str} -- The namespace to search for the experiment
         client {kfp.Client} -- The kfp client
+        page_size {str} -- The number of experiments to collect a each API request
+
+    Keyword Arguments:
+        page_token {str} -- The page token to use for the API request (default: {" "})
 
     Returns:
         str -- The experiment id
@@ -121,13 +184,18 @@ def find_experiment_id(experiment_name: str, namespace: str, client: kfp.Client,
         page_token = experiments.next_page_token
         # If no next tooken break
         if not page_token:
-            logging.info(
-                f"Could not find the pipeline id, is the experiment name: {experiment_name} correct? ")
-            break
+            raise ValueError("Failed to find experiment with the name: {}".format(
+                experiment_name))
 
 
 def read_pipeline_params(pipeline_parameters_path: str) -> dict:
-    # [TODO] add docstring here
+    """Function to read pipeline parameters from YAML
+
+    Arguments:
+        pipeline_parameters_path {str} -- Path to YAML file containing set parameters
+    Returns:
+        dict -- Dictionary containing the parameters
+    """
     pipeline_params = {}
     with open(pipeline_parameters_path) as f:
         try:
@@ -141,30 +209,56 @@ def read_pipeline_params(pipeline_parameters_path: str) -> dict:
     return pipeline_params
 
 
-def run_pipeline(client: kfp.Client, pipeline_name: str, pipeline_id: str, experiment_name: str, pipeline_parameters_path: str, namespace: str, service_account: str):
+def run_pipeline(client: kfp.Client,
+                 pipeline_name: str,
+                 pipeline_id: str,
+                 experiment_name: str,
+                 pipeline_parameters_path: str,
+                 namespace: str,
+                 service_account: str,
+                 pipeline_version_name: str = None,
+                 run_name: str = None):
+    """Function to trigger a run of an existing pipeline
+
+    Arguments:
+        client {kfp.Client} -- The kfp client
+        pipeline_name {str} -- The name of the pipeline to trigger
+        pipeline_id {str} -- The ID of the pipeline to trigger, takes precedence over name if provided
+        experiment_name {str} -- The name of the experiment to place the run in
+        pipeline_parameters_path {str} -- Optional path to parameters YAML file
+        namespace {str} -- The Kubeflow namespace of the pipeline
+        service_account {str} -- Optional, name of the Kubernetes service account to run the pipeline with
+        pipeline_version_name {str} -- Name of the pipeline version, if pipeline_name was provided
+        run_name {str} -- Name of the pipeline run
+    """
     experiment_id = find_experiment_id(
         experiment_name=experiment_name, client=client, namespace=namespace)
-    if not experiment_id:
-        raise ValueError("Failed to find experiment with the name: {}".format(
-            experiment_name))
     logging.info(f"The expriment id is: {experiment_id}")
-    # [TODO] What would be a good way to name the jobs
-    job_name = pipeline_name + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    job_name = f"{pipeline_name}_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}" if not run_name else run_name
     logging.info(f"The job name is: {job_name}")
 
-    if pipeline_parameters_path is not None:
-        pipeline_params = read_pipeline_params(pipeline_parameters_path)
+    pipeline_params = {} if not pipeline_parameters_path else read_pipeline_params(pipeline_parameters_path)
+
+    if pipeline_id:
+        resolved_pipeline_id = pipeline_id
+        resolved_version_id = None
     else:
-        pipeline_params = {}
+        resolved_pipeline_id = find_pipeline_id(pipeline_name, client)
+        logging.info(f"Found ID for pipeline {pipeline_name}: {resolved_pipeline_id}")
+        if pipeline_version_name:
+            resolved_version_id = find_pipeline_version_id(resolved_pipeline_id, pipeline_version_name, client)
+            logging.info(f"Found ID for pipeline version {pipeline_version_name}: {resolved_version_id}")
+        else:
+            resolved_version_id = None
 
     logging.info(
-        f"experiment_id: {experiment_id}, job_name:{job_name}, pipeline_params:{pipeline_params}, pipeline_id:{pipeline_id}, namespace:{namespace}")
+        f"experiment_id: {experiment_id}, job_name:{job_name}, pipeline_params:{pipeline_params}, pipeline_id:{pipeline_id}, version_id:{resolved_version_id}, namespace:{namespace}")
     client.run_pipeline(
         experiment_id=experiment_id,
         job_name=job_name,
-        # Read this as a yaml, people seam to prefer that to json.
         params=pipeline_params,
-        pipeline_id=pipeline_id,
+        pipeline_id=resolved_pipeline_id,
+        version_id=resolved_version_id,
         service_account=service_account)
     logging.info(
         "Successfully started the pipeline, head over to kubeflow and check it out")

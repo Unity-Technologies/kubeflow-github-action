@@ -10,20 +10,23 @@ inputs:
   PIPELINE_CODE_PATH:
     description: The full path name including the filename of the python file that describes the pipeline you want to run on Kubeflow.  This should be relative to the root of the GitHub repository where the Action is triggered.
     required: true
-  PIPELINE_FUNCTION_NAME:
-    description: The name of the pipeline, this name will be the name of the pipeline in the Kubeflow UI.
+  PIPELINE_FUNCTION:
+    description: The name of the function which defines the pipeline in the Python file
     required: true
+  PIPELINE_NAME:
+    description: The name of the pipeline, this name will be the name of the pipeline in the Kubeflow UI. Defaults to {PIPELINE_FUNCTION}_{GITHUB_SHA}.
+    required: false
+  PIPELINE_VERSION_NAME:
+    description: The name of the pipeline version. Defaults to {PIPELINE_FUNCTION}_{GITHUB_SHA}.
+    required: false
   PIPELINE_PARAMETERS_PATH:
     description: Path to a parameters file in your repo; the parameters will be passed to the pipeline.
     required: false
   ENCODED_GOOGLE_APPLICATION_CREDENTIALS:
     description: The base64 encoded google credentials
     required: true
-  GOOGLE_APPLICATION_CREDENTIALS:
-    description: The path to the decoded google credentials
-    required: true
   EXPERIMENT_NAME: 
-    description: The name of the experiment name within which the kubeflow experiment should run
+    description: The name of the experiment name within which the kubeflow pipeline should run
     required: true
   PIPELINE_NAMESPACE: 
     description: The namespace in which the pipeline should run
@@ -31,8 +34,8 @@ inputs:
   RUN_PIPELINE: 
     description: Should github action also trigger the pipeline
     required: false
-  VERSION_GITHUB_SHA: 
-    description: If the pipeline containers are versioned with the github hash
+  RUN_NAME:
+    description: Name of the pipeline run. Defaults to {PIPELINE_NAME}_{DATETIME}.
     required: false
   V2_COMPATIBLE:
     description: If the pipeline should be compiled with KFP SDK v2 compatibility
