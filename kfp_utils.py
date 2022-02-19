@@ -209,11 +209,22 @@ def read_pipeline_params(pipeline_parameters_path: str) -> dict:
     return pipeline_params
 
 
+def parse_raw_params(pipeline_params: str) -> dict:
+    """Function to parse raw YAML string into parameters dict
+
+    Arguments:
+        pipeline_params {str} -- Raw YAML string containing set parameters
+    Returns:
+        dict -- Dictionary containing the parameters
+    """
+    yaml.safe_load(pipeline_params)
+
 def run_pipeline(client: kfp.Client,
                  pipeline_name: str,
                  pipeline_id: str,
                  experiment_name: str,
                  pipeline_parameters_path: str,
+                 pipeline_parameters: str,
                  namespace: str,
                  service_account: str,
                  pipeline_version_name: str = None,
@@ -237,7 +248,9 @@ def run_pipeline(client: kfp.Client,
     job_name = f"{pipeline_name}_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}" if not run_name else run_name
     logging.info(f"The job name is: {job_name}")
 
-    pipeline_params = {} if not pipeline_parameters_path else read_pipeline_params(pipeline_parameters_path)
+    file_pipeline_params = {} if not pipeline_parameters_path else read_pipeline_params(pipeline_parameters_path)
+    raw_pipeline_params = {} if not pipeline_parameters else parse_raw_params(pipeline_parameters)
+    pipeline_params = file_pipeline_params.copy().update(raw_pipeline_params)
 
     if pipeline_id:
         resolved_pipeline_id = pipeline_id

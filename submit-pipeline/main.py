@@ -1,7 +1,4 @@
 import os
-import yaml
-import kfp
-import logging
 from kfp_utils import *
 
 def main():
@@ -37,6 +34,11 @@ def main():
         else:
             pipeline_parameters_path = None
 
+        if os.getenv("INPUT_PIPELINE_PARAMETERS") and not str.isspace(os.getenv("INPUT_PIPELINE_PARAMETERS")):
+            pipeline_parameters = os.getenv("INPUT_PIPELINE_PARAMETERS")
+        else:
+            pipeline_parameters = None
+
         if os.getenv("INPUT_PIPELINE_VERSION_NAME") and not str.isspace(os.getenv("INPUT_PIPELINE_VERSION_NAME")):
             pipeline_version_name = os.getenv("INPUT_PIPELINE_VERSION_NAME")
         else:
@@ -52,6 +54,7 @@ def main():
                      experiment_name=os.getenv("INPUT_EXPERIMENT_NAME"),
                      client=client,
                      pipeline_parameters_path=pipeline_parameters_path,
+                     pipeline_parameters=pipeline_parameters,
                      namespace=os.getenv("INPUT_PIPELINE_NAMESPACE"),
                      service_account=os.getenv("INPUT_PIPELINE_SERVICE_ACCOUNT"),
                      pipeline_version_name=pipeline_version_name,

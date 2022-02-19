@@ -23,6 +23,7 @@ on: [push]
 * PIPELINE_NAME: The name of the pipeline, this name will be the name of the pipeline in the Kubeflow UI. Defaults to `{PIPELINE_FUNCTION}_{GITHUB_SHA}`.
 * PIPELINE_VERSION_NAME: The name of the pipeline version. Defaults to `{PIPELINE_FUNCTION}_{GITHUB_SHA}`.
 * PIPELINE_PARAMETERS_PATH: Optional. Path to a parameters YAML file in your repo; the parameters will be passed to the pipeline.
+* PIPELINE_PARAMETERS: Optional. YAML string containing parameter values; the parameters will be passed to the pipeline. If both this and PIPELINE_PARAMETERS_PATH are provided, the parameter lists will be merged, but values in this argument will override any matching keys in the file.
 * ENCODED_GOOGLE_APPLICATION_CREDENTIALS: JSON key for a service account with permissions to call the KFP API. Base 64 encoded, e.g.:
 ``` bash
 cat path-to-key.json | base64
