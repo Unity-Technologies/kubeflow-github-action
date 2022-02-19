@@ -107,7 +107,6 @@ def find_pipeline_id(pipeline_name: str,
             page_size=page_size, page_token=page_token)
         logging.info(f"Searching for pipeline name {pipeline_name}")
         for pipeline in pipelines.pipelines:
-            logging.info(f"Found pipeline name {pipeline.name}")
             if pipeline.name == pipeline_name:
                 logging.info(f"The pipeline id is: {pipeline.id}")
                 return pipeline.id
@@ -249,6 +248,7 @@ def run_pipeline(client: kfp.Client,
     logging.info(f"The job name is: {job_name}")
 
     file_pipeline_params = {} if not pipeline_parameters_path else read_pipeline_params(pipeline_parameters_path)
+    logging.info(f"Raw params string: {pipeline_parameters}")
     raw_pipeline_params = {} if not pipeline_parameters else parse_raw_params(pipeline_parameters)
     logging.info(f"Parameters from file: {file_pipeline_params}\nParameters passed directly: {raw_pipeline_params}")
     pipeline_params = file_pipeline_params.copy().update(raw_pipeline_params)
