@@ -253,7 +253,8 @@ def run_pipeline(client: kfp.Client,
     file_pipeline_params = {} if not pipeline_parameters_path else read_pipeline_params(pipeline_parameters_path)
     raw_pipeline_params = {} if not pipeline_parameters else parse_raw_params(pipeline_parameters)
     logging.info(f"Parameters from file: {file_pipeline_params}\nParameters passed directly: {raw_pipeline_params}")
-    pipeline_params = file_pipeline_params.copy().update(raw_pipeline_params)
+    pipeline_params = file_pipeline_params.copy()
+    pipeline_params.update(raw_pipeline_params)
     logging.info(f"Merged parameters: {pipeline_params}")
 
     if pipeline_id:
