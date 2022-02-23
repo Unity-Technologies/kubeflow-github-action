@@ -20,7 +20,10 @@ inputs:
     description: The name of the pipeline version. Defaults to {PIPELINE_FUNCTION}_{GITHUB_SHA}.
     required: false
   PIPELINE_PARAMETERS_PATH:
-    description: Path to a parameters file in your repo; the parameters will be passed to the pipeline.
+    description: Path to a parameters YAML file in your repo; the parameters will be passed to the pipeline.
+    required: false
+  PIPELINE_PARAMETERS:
+    description: YAML string containing parameter values; the parameters will be passed to the pipeline. If both this and PIPELINE_PARAMETERS_PATH are provided, the parameter lists will be merged, but values in this argument will override any matching keys in the file.
     required: false
   ENCODED_GOOGLE_APPLICATION_CREDENTIALS:
     description: The base64 encoded google credentials
