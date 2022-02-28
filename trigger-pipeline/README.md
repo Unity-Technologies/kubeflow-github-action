@@ -38,9 +38,9 @@ PIPELINE_PARAMETERS: |
 cat path-to-key.json | base64
 ```
 * EXPERIMENT_NAME: The name of the experiment name within which the kubeflow pipeline should run
-* PIPELINE_NAMESPACE: The namespace in which the pipeline should run
+* PIPELINE_NAMESPACE: The namespace in which the pipeline should run - should be your team's Kubeflow namespace.
 * PIPELINE_ID: The ID of the version of the pipeline to be triggered. If provided this will take priority over the pipeline name and version name.
 * PIPELINE_NAME: The name of the pipeline to be triggered. If provided without the version name will trigger the default version.
 * PIPELINE_VERSION_NAME: The name of the version of the pipeline to be triggered. PIPELINE_NAME must be provided. If PIPELINE_ID is provided it will override this.
 * RUN_NAME: Name of the run. Defaults to `{PIPELINE_NAME}_{DATETIME}`.
-* PIPELINE_SERVICE_ACCOUNT: Specifies which Kubernetes service account this run uses.
+* PIPELINE_SERVICE_ACCOUNT: Specifies which Kubernetes service account this run uses - should be your team's service account which is provided with your Kubeflow profile.
