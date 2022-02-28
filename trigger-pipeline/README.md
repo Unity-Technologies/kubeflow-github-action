@@ -7,8 +7,19 @@
 To trigger a pipeline:
 
 ```yaml
-name: Compile and Deploy Kubeflow pipeline
-on: [push]
+- name: Trigger Kubeflow pipeline by name, default version
+  id: kubeflow
+  uses: Unity-Technologies/kubeflow-github-action/trigger-pipeline@master
+  with:
+    KUBEFLOW_URL: https://kubeflow-platform.iap.stg.mlp.unity3d.com/pipeline
+    ENCODED_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.KUBEFLOW_DEMO_SA_KEY_ENCODED }}
+    CLIENT_ID: ${{ secrets.ISTIO_CLIENT_ID }}
+    PIPELINE_NAMESPACE: "kubeflow-demo"
+    PIPELINE_SERVICE_ACCOUNT: "kubeflow-demo"
+    PIPELINE_NAME: ${{ github.event.inputs.pipeline_name }}
+    EXPERIMENT_NAME: ${{ github.event.inputs.experiment_name }}
+    RUN_NAME: ${{ github.event.inputs.run_name }}
+    PIPELINE_PARAMETERS_PATH: my-parameters-file.yaml
 ```
 
 ## Inputs

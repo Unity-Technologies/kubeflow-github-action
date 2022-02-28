@@ -10,8 +10,21 @@ The purpose of this action is to allow for automated deployments of [Kubeflow Pi
 To compile a pipeline and upload it to kubeflow: 
 
 ```yaml
-name: Compile and Deploy Kubeflow pipeline
-on: [push]
+- name: Submit Kubeflow pipeline
+  id: kubeflow
+  uses: Unity-Technologies/kubeflow-github-action/submit-pipeline@master
+  with:
+    KUBEFLOW_URL: https://kubeflow-platform.iap.stg.mlp.unity3d.com/pipeline
+    CLIENT_ID: ${{ secrets.ISTIO_CLIENT_ID }}
+    ENCODED_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.KUBEFLOW_DEMO_SA_KEY_ENCODED }}
+    PIPELINE_CODE_PATH: "kubeflow-pipeline-demo/hello_world_pipeline.py"
+    PIPELINE_FUNCTION: "sequential_pipeline"
+    PIPELINE_NAME: "demo-pipeline"
+    PIPELINE_VERSION_NAME: "demo-pipeline-${{ github.sha }}"
+    PIPELINE_NAMESPACE: "kubeflow-demo"
+    PIPELINE_SERVICE_ACCOUNT: "kubeflow-demo"
+    EXPERIMENT_NAME: "demo"
+    RUN_PIPELINE: true
 ```
 
 ## Inputs
