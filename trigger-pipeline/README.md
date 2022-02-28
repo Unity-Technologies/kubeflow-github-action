@@ -13,7 +13,7 @@ To trigger a pipeline:
   with:
     KUBEFLOW_URL: https://kubeflow-platform.iap.stg.mlp.unity3d.com/pipeline
     ENCODED_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.KUBEFLOW_DEMO_SA_KEY_ENCODED }}
-    CLIENT_ID: ${{ secrets.ISTIO_CLIENT_ID }}
+    CLIENT_ID: ${{ secrets.IAP_CLIENT_ID }}
     PIPELINE_NAMESPACE: "kubeflow-demo"
     PIPELINE_SERVICE_ACCOUNT: "kubeflow-demo"
     PIPELINE_NAME: ${{ github.event.inputs.pipeline_name }}
@@ -24,10 +24,15 @@ To trigger a pipeline:
 
 ## Inputs
 
-* KUBEFLOW_URL: The endpoint where your Kubeflow UI is running.
-* CLIENT_ID: The IAP client id, which was specified when the kubeflow deployment where setup using IAP.
+* KUBEFLOW_URL: The endpoint where the Kubeflow service is running.
+* CLIENT_ID: The IAP client id, which can be obtained from Vault. See docs [here](https://docs.dp.unity3d.com/Machine_Learning_Platform/vault/).
 * PIPELINE_PARAMETERS_PATH: Optional. Path to a parameters YAML file in your repo; the parameters will be passed to the pipeline.
-* PIPELINE_PARAMETERS: Optional. YAML string containing parameter values; the parameters will be passed to the pipeline. If both this and PIPELINE_PARAMETERS_PATH are provided, the parameter lists will be merged, but values in this argument will override any matching keys in the file.
+* PIPELINE_PARAMETERS: Optional. YAML string containing parameter values; the parameters will be passed to the pipeline. If both this and PIPELINE_PARAMETERS_PATH are provided, the parameter lists will be merged, but values in this argument will override any matching keys in the file. Use the `|` operator to write inline YAML, like so:
+```yaml
+PIPELINE_PARAMETERS: |
+  docker_image: docker/whalesay:latest
+  message: "Hello world!"
+```
 * ENCODED_GOOGLE_APPLICATION_CREDENTIALS: JSON key for a service account with permissions to call the KFP API. Base 64 encoded, e.g.:
 ``` bash
 cat path-to-key.json | base64

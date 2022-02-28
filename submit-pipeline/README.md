@@ -15,7 +15,7 @@ To compile a pipeline and upload it to kubeflow:
   uses: Unity-Technologies/kubeflow-github-action/submit-pipeline@master
   with:
     KUBEFLOW_URL: https://kubeflow-platform.iap.stg.mlp.unity3d.com/pipeline
-    CLIENT_ID: ${{ secrets.ISTIO_CLIENT_ID }}
+    CLIENT_ID: ${{ secrets.IAP_CLIENT_ID }}
     ENCODED_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.KUBEFLOW_DEMO_SA_KEY_ENCODED }}
     PIPELINE_CODE_PATH: "kubeflow-pipeline-demo/hello_world_pipeline.py"
     PIPELINE_FUNCTION: "sequential_pipeline"
@@ -29,14 +29,19 @@ To compile a pipeline and upload it to kubeflow:
 
 ## Inputs
 
-* KUBEFLOW_URL: The endpoint where your Kubeflow UI is running.
-* CLIENT_ID: The IAP client id, which was specified when the kubeflow deployment where setup using IAP.
+* KUBEFLOW_URL: The endpoint where the Kubeflow service is running.
+* CLIENT_ID: The IAP client id, which can be obtained from Vault. See docs [here](https://docs.dp.unity3d.com/Machine_Learning_Platform/vault/).
 * PIPELINE_CODE_PATH: The full path name including the filename of the python file that describes the pipeline you want to run on Kubeflow.  This should be relative to the root of the GitHub repository where the Action is triggered.
 * PIPELINE_FUNCTION: The name of the function which defines the pipeline in the Python file
 * PIPELINE_NAME: The name of the pipeline, this name will be the name of the pipeline in the Kubeflow UI. Defaults to `{PIPELINE_FUNCTION}_{GITHUB_SHA}`.
 * PIPELINE_VERSION_NAME: The name of the pipeline version. Defaults to `{PIPELINE_FUNCTION}_{GITHUB_SHA}`.
 * PIPELINE_PARAMETERS_PATH: Optional. Path to a parameters YAML file in your repo; the parameters will be passed to the pipeline.
-* PIPELINE_PARAMETERS: Optional. YAML string containing parameter values; the parameters will be passed to the pipeline. If both this and PIPELINE_PARAMETERS_PATH are provided, the parameter lists will be merged, but values in this argument will override any matching keys in the file.
+* PIPELINE_PARAMETERS: Optional. YAML string containing parameter values; the parameters will be passed to the pipeline. If both this and PIPELINE_PARAMETERS_PATH are provided, the parameter lists will be merged, but values in this argument will override any matching keys in the file. Use the `|` operator to write inline YAML, like so:
+```yaml
+PIPELINE_PARAMETERS: |
+  docker_image: docker/whalesay:latest
+  message: "Hello world!"
+```
 * ENCODED_GOOGLE_APPLICATION_CREDENTIALS: JSON key for a service account with permissions to call the KFP API. Base 64 encoded, e.g.:
 ``` bash
 cat path-to-key.json | base64
