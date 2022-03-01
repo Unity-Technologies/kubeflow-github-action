@@ -50,6 +50,5 @@ cat path-to-key.json | base64
 * PIPELINE_NAMESPACE: The namespace in which the pipeline should run - should be your team's Kubeflow namespace.
 * RUN_PIPELINE: Should github action also trigger the pipeline: "true" or "false" (default false).
   RUN_NAME: Name of the pipeline run. Defaults to `{PIPELINE_NAME}_{DATETIME}`.
-* V2_COMPATIBLE:
-* description: If the pipeline should be compiled with KFP SDK v2 compatibility. "true" or "false" (default false).
+* V2_COMPATIBLE: If the pipeline should be compiled with KFP SDK v2 compatibility. "true" or "false" (default false).
 * PIPELINE_SERVICE_ACCOUNT: Specifies which Kubernetes service account this run uses - should be your team's service account which is provided with your Kubeflow profile.
