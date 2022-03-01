@@ -74,10 +74,17 @@ def upload_pipeline(pipeline_name_zip: str,
         client_id=client_id,
     )
     if pipeline_version_name:
+        try:
+            pipeline_id = find_pipeline_id(pipeline_name, client)
+        except ValueError:
+            response = client.upload_pipeline(
+                pipeline_package_path=pipeline_name_zip,
+                pipeline_name=pipeline_name)
+            pipeline_id = response.id
         client.upload_pipeline_version(
             pipeline_package_path=pipeline_name_zip,
             pipeline_version_name=pipeline_version_name,
-            pipeline_name=pipeline_name)
+            pipeline_id=pipeline_id)
     else:
         client.upload_pipeline(
             pipeline_package_path=pipeline_name_zip,
