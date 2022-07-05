@@ -1,3 +1,4 @@
+import os
 import yaml
 import kfp
 import kfp.compiler as compiler
@@ -25,6 +26,7 @@ def load_function(pipeline_function_name: str, full_path_to_pipeline: str) -> ob
         f"Loading the pipeline function from: {full_path_to_pipeline}")
     logging.info(
         f"The name of the pipeline function is: {pipeline_function_name}")
+    sys.path.append(os.path.split(full_path_to_pipeline)[0])
     spec = importlib.util.spec_from_file_location(
         pipeline_function_name, full_path_to_pipeline)
     foo = importlib.util.module_from_spec(spec)
