@@ -52,3 +52,10 @@ cat path-to-key.json | base64
   RUN_NAME: Name of the pipeline run. Defaults to `{PIPELINE_NAME}_{DATETIME}`.
 * V2_COMPATIBLE: If the pipeline should be compiled with KFP SDK v2 compatibility. "true" or "false" (default false).
 * PIPELINE_SERVICE_ACCOUNT: Specifies which Kubernetes service account this run uses - should be your team's service account which is provided with your Kubeflow profile.
+
+## Necessary Permissions
+
+The service account you use via the `ENCODED_GOOGLE_APPLICATION_CREDENTIALS` parameter needs to have the correct permissions to call the KFP API and create pipelines and runs. The account should have the `roles/iap.httpsResourceAccessor` role in order to access the authenticated [id token](https://google-auth.readthedocs.io/en/stable/reference/google.oauth2.id_token.html?highlight=id_token) successfully.
+To add this role to the associated GCP service account, please make a [PR to ML Platform Terraform repo](https://github.com/Unity-Technologies/ml-platform-terraform). You can follow this [example](https://github.com/Unity-Technologies/ml-platform-terraform#adding-service-account-role).
+
+You must also add the service account email as a contributor to your Kubeflow namespace, using the `Manage Contributors` tab in the Kubeflow UI.
