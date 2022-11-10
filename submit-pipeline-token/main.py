@@ -17,7 +17,6 @@ def main():
     pipeline_name = os.getenv('INPUT_PIPELINE_NAME') if os.getenv('INPUT_PIPELINE_NAME')\
         else f"{os.getenv('INPUT_PIPELINE_FUNCTION')}_{os.getenv('GITHUB_SHA')}"
     
-    logging.info("The beginning of the ID_TOKEN is: {}".format(os.getenv("INPUT_ID_TOKEN")[0:10]))
     client = upload_pipeline_by_token(pipeline_name_zip=pipeline_name_zip,
                              pipeline_name=pipeline_name,
                              kubeflow_url=os.getenv('INPUT_KUBEFLOW_URL'),

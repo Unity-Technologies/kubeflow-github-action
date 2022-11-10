@@ -1,6 +1,0 @@
-#!/bin/bash
-
-echo ${GOOGLE_APPLICATION_CREDENTIALS}
-head -3 ${GOOGLE_APPLICATION_CREDENTIALS}
-
-python  /main.py
