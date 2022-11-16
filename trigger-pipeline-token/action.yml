@@ -1,0 +1,45 @@
+name: Trigger Kubeflow Pipelines on GCP.
+description: Trigger a run of a Kubeflow Pipeline on Google Cloud Platform.
+inputs:
+  KUBEFLOW_URL:
+    description: The endpoint where your Kubeflow UI is running. 
+    required: true
+  ID_TOKEN:
+    description: The OpenID Connect (OIDC) token generated for your service.
+    required: true
+  PIPELINE_PARAMETERS_PATH:
+    description: Path to a parameters YAML file in your repo; the parameters will be passed to the pipeline.
+    required: false
+  PIPELINE_PARAMETERS:
+    description: YAML string containing parameter values; the parameters will be passed to the pipeline. If both this and PIPELINE_PARAMETERS_PATH are provided, the parameter lists will be merged, but values in this argument will override any matching keys in the file.
+    required: false
+  EXPERIMENT_NAME: 
+    description: The name of the experiment name within which the kubeflow pipeline should run
+    required: false
+  PIPELINE_NAMESPACE: 
+    description: The namespace in which the pipeline should run
+    required: true
+  PIPELINE_ID: 
+    description: The ID of the version of the pipeline to be triggered. If provided this will take priority over the pipeline name and version name.
+    required: false
+  PIPELINE_NAME:
+    description: The name of the pipeline to be triggered. If provided without the version name will trigger the default version.
+    required: false
+  PIPELINE_VERSION_NAME:
+    description: The name of the version of the pipeline to be triggered. PIPELINE_NAME must be provided. If PIPELINE_ID is provided it will override this.
+    required: false
+  RUN_NAME:
+    description: Name of the run. Defaults to {PIPELINE_NAME}_{DATETIME}.
+    required: false
+  PIPELINE_SERVICE_ACCOUNT:
+    description: Specifies which Kubernetes service account this run uses
+    required: false
+outputs:
+  WORKFLOW_URL:
+    description: URL that is a link to pipeline in Kubeflow
+branding:
+  color: 'purple'
+  icon: 'upload-cloud'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

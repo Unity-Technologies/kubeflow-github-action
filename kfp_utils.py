@@ -55,6 +55,42 @@ def pipeline_compile(pipeline_function: object, v2_compatible: bool = False) -> 
     logging.info("The pipeline function is compiled.")
     return pipeline_name_zip
 
+def upload_pipeline_by_token(pipeline_name_zip: str,
+                    pipeline_name: str,
+                    kubeflow_url: str,
+                    existing_token: str,
+                    pipeline_version_name: str = None):
+    """Function to upload pipeline to kubeflow. 
+
+    Arguments:
+        pipeline_name_zip {str} -- The name of the compiled pipeline
+        pipeline_name {str} -- The name of the pipeline. This will be the name in the kubeflow UI.
+        kubeflow_url {str} -- URL of the Kubeflow server
+        existing_token {str} -- ID token for auth to kfp
+        pipeline_version_name {str} -- The name of the pipeline version. This will be the name of
+            this version in the kubeflow UI.
+    """
+    client = kfp.Client(
+        host=kubeflow_url,
+        existing_token=existing_token,
+    )
+    if pipeline_version_name:
+        try:
+            pipeline_id = find_pipeline_id(pipeline_name, client)
+        except ValueError:
+            response = client.upload_pipeline(
+                pipeline_package_path=pipeline_name_zip,
+                pipeline_name=pipeline_name)
+            pipeline_id = response.id
+        client.upload_pipeline_version(
+            pipeline_package_path=pipeline_name_zip,
+            pipeline_version_name=pipeline_version_name,
+            pipeline_id=pipeline_id)
+    else:
+        client.upload_pipeline(
+            pipeline_package_path=pipeline_name_zip,
+            pipeline_name=pipeline_name)
+    return client
 
 def upload_pipeline(pipeline_name_zip: str,
                     pipeline_name: str,
